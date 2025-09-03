@@ -1530,14 +1530,17 @@ function showResult() {
 
 function downloadPDF() {
   setPrintDateTime(); // also include time in PDF
+
   const element = document.getElementById("gradeCard");
+
   const opt = {
-    margin:       0.5,
+    margin:       [0.3, 0.3, 0.3, 0.3], // smaller margins for more content
     filename:     'UniversityUpdates_GradeCard.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
+    image:        { type: 'jpeg', quality: 1 }, // max image quality
+    html2canvas:  { scale: 4, useCORS: true, letterRendering: true }, // higher scale for FHD
     jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
   };
+
   html2pdf().set(opt).from(element).save();
 }
 
