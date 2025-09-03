@@ -562,8 +562,11 @@ footer {
       </table>
       <div id="overall"></div>
       <div style="text-align:center; margin-top:15px;">
-        <button type="button" onclick="downloadPDF()">Download Grade Card (PDF)</button>
-      </div>
+  <button type="button" onclick="downloadPDF()">Download Grade Card (PDF)</button>
+  <button type="button" onclick="closeModal()">Close</button>
+</div>
+      <div id="printDateTime" style="text-align:right; font-size:0.85em; margin-top:10px; color:#333;"></div>
+
       <div id="note">
         <strong>Disclaimer:</strong> This is an unofficial grade card and is for informational purposes only. It is not an official document issued by Chaudhary Charan Singh University, Meerut. For any discrepancies, please refer to the official records of the University.
       </div>
@@ -1357,6 +1360,22 @@ function calculateResult(){
     return;
   }
  
+ // Check if at least one subject has marks entered
+const allInputs = document.querySelectorAll(
+  "#marksSection input[type=number]"
+);
+let anyMarksEntered = false;
+allInputs.forEach(inp => {
+  if (inp.value.trim() !== "" && !isNaN(inp.value)) {
+    anyMarksEntered = true;
+  }
+});
+if (!anyMarksEntered) {
+  alert("Please enter marks for at least one subject.");
+  return;
+}
+
+
   const tbody=document.querySelector("#resultTable tbody"); tbody.innerHTML="";
   let graceLeft=maxGrace, remainingGraceSubjects=maxGraceSubjects;
   let subjects=[];
@@ -1494,14 +1513,33 @@ window.onclick = function(event) {
   }
 }
 
-function resetForm(){ location.reload(); }
-function downloadPDF(){
-  const element=document.getElementById("gradeCard");
-  const studentName = document.getElementById('studentName').value || 'student';
-  const rollNumber = document.getElementById('rollNumber').value || '0000';
-  const opt={ margin:0.5, filename:`GradeCard_${studentName.replace(/\s/g, '_')}_${rollNumber}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'in',format:'a4',orientation:'portrait'} };
+function setPrintDateTime() {
+  const now = new Date();
+  const formatted = now.toLocaleString('en-IN', {
+    dateStyle: 'full',
+    timeStyle: 'short'
+  });
+  document.getElementById("printDateTime").innerText = "Print Date & Time: " + formatted;
+}
+
+function showResult() {
+  setPrintDateTime(); // ensure it updates every time result opens
+  document.getElementById("resultModal").style.display = "flex";
+}
+
+function downloadPDF() {
+  setPrintDateTime(); // also include time in PDF
+  const element = document.getElementById("gradeCard");
+  const opt = {
+    margin:       0.5,
+    filename:     'UniversityUpdates_GradeCard.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
   html2pdf().set(opt).from(element).save();
 }
+
 </script>
 </body>
 </html>
